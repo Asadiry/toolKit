@@ -1,12 +1,17 @@
 import torch
 import torch.nn as nn
 
+class mae_loss(nn.Module):
+    def __init__(self, reduction="mean", compare_keys=None):   
+        super(mae_loss, self).__init__()
+        self.loss_func = nn.L1Loss(reduction=reduction)
+        self.compare_keys = compare_keys
 
-def build_loss(**params):
-    if params["loss_name"] == "recon_mix_cls":
-        alpha = params["alpha"]
-        loss = recon_mix_cls(alpha)
-    return loss
+    def forward(self, x):
+        value_x = x[self.compare_keys[0]]
+        value_y = x[self.compare_keys[1]]
+        loss = self.loss_func(value_x, value_y)
+        return loss
 
 class mse_loss(nn.Module):
     def __init__(self, reduction="mean"):
